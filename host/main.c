@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미�
 
 
 		// TA 쪽에 Decrypt Request 해야하는 부분
-		send_decrypt_request	
+		send_decrypt_request();
 		fclose(fs);
 	}
 
