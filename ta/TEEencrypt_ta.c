@@ -118,6 +118,8 @@ TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
 			uint32_t cmd_id,
 			uint32_t param_types, TEE_Param params[4])
 {
+
+	key = 3;
 	(void)&sess_ctx; /* Unused parameter */
 
 	switch (cmd_id) {
