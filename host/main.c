@@ -26,6 +26,7 @@ void send_encrypt_request(void){
 
 	fs = fopen(context_file_name,"r"); // input 파일 읽어옴
 	fgets(context_input_buffer, sizeof(context_input_buffer),fs);
+	fclose(fs);
 
 	printf("========================Encryption========================\n");
 	memcpy(op.params[0].tmpref.buffer, context_input_buffer, len);
@@ -36,7 +37,13 @@ void send_encrypt_request(void){
 
 	memcpy(ciphertext, op.params[0].tmpref.buffer, len);
 	printf("Ciphertext : %s\n", ciphertext);
-	fclose(fs);
+	
+	char encrypted_file_name[20] = "encrypted_"; 
+	strcat(encrypted_file_name, context_file_name);
+	FILE* fs_encrypted = fopen(encrytped_file_name, "w");
+	fputs(encrypted, fs_encrypted);
+	fclose(fs_encrypted);
+
 }
 
 void send_decrypt_request(void){
@@ -49,6 +56,8 @@ void send_decrypt_request(void){
 	
 	fs = fopen(context_file_name,"r"); // input 파일 읽어옴
 	fgets(context_input_buffer, sizeof(context_input_buffer),fs);
+	fclose(fs);
+	
 	
 	printf("========================Decryption========================\n");
 	memcpy(op.params[0].tmpref.buffer, context_input_buffer, len);
@@ -59,13 +68,17 @@ void send_decrypt_request(void){
 
 	memcpy(plaintext, op.params[0].tmpref.buffer, len);
 	printf("Plaintext : %s\n", plaintext);
-	fclose(fs);
+
+	char decrypted_file_name[20] = "decrypted_"; 
+	strcat(decrypted_file_name, context_file_name);
+	FILE* fs_decrypted = fopen(decrytped_file_name, "w");
+	fputs(decrypted, fs_decrypted);
+	fclose(fs_decrypted);
+
 }
 
 int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미터로 Argument들을 받도록 함.
 {
-	
-	context_input_buffer = {0,};
 	
 	/* Initialize a context connecting us to the TEE */
 	res = TEEC_InitializeContext(NULL, &ctx);
@@ -80,8 +93,8 @@ int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미�
 
 	/* Clear the TEEC_Operation struct */
 	memset(&op, 0, sizeof(op));
-
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INOUT, TEEC_NONE, TEEC_NONE, TEEC_NONE);
+	context_input_buffer = {0,};
 
 
 	/* Argument 초기화 */
@@ -106,8 +119,8 @@ int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미�
 	else{
 		printf("Warning: Invalid Command\n") ;	
 	}
+	
 	TEEC_CloseSession(&sess);
-
 	TEEC_FinalizeContext(&ctx);
 
 	return 0;
