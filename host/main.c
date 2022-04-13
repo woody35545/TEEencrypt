@@ -19,11 +19,13 @@ uint32_t err_origin;
 
 
 void send_encrypt_request(void){
-	char ciphertext [100];
-
+	char ciphertext [100] = {0,}; 
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_NONE, TEEC_NONE, TEEC_NONE);
-	op.params[0].tmpref.buffer = {0,};
+	op.params[0].tmpref.buffer = context_input_buffer;
 	op.params[0].tmpref.size = len;
+
+	fs = fopen(context_file_name,"r"); // input 파일 읽어옴
+	fgets(context_input_buffer, sizeof(context_input_buffer),fs);
 
 	printf("========================Encryption========================\n");
 	memcpy(op.params[0].tmpref.buffer, context_input_buffer, len);
@@ -34,16 +36,20 @@ void send_encrypt_request(void){
 
 	memcpy(ciphertext, op.params[0].tmpref.buffer, len);
 	printf("Ciphertext : %s\n", ciphertext);
-
+	fclose(fs);
 }
 
 void send_decrypt_request(void){
-	char plaintext [100];
+	char plaintext [100] = {0,};
 
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_NONE, TEEC_NONE, TEEC_NONE);
-	op.params[0].tmpref.buffer = {0,};
+	op.params[0].tmpref.buffer = context_input_buffer;
 	op.params[0].tmpref.size = len;
 
+	
+	fs = fopen(context_file_name,"r"); // input 파일 읽어옴
+	fgets(context_input_buffer, sizeof(context_input_buffer),fs);
+	
 	printf("========================Decryption========================\n");
 	memcpy(op.params[0].tmpref.buffer, context_input_buffer, len);
 
@@ -53,11 +59,14 @@ void send_decrypt_request(void){
 
 	memcpy(plaintext, op.params[0].tmpref.buffer, len);
 	printf("Plaintext : %s\n", plaintext);
-
+	fclose(fs);
 }
 
 int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미터로 Argument들을 받도록 함.
 {
+	
+	context_input_buffer = {0,};
+	
 	/* Initialize a context connecting us to the TEE */
 	res = TEEC_InitializeContext(NULL, &ctx);
 	if (res != TEEC_SUCCESS)
@@ -84,26 +93,14 @@ int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미�
 	if(strcmp(option, "-e") == 0){
 
 		printf("Encrypt option\n");
-		fs = fopen(context_file_name,"r"); // input 파일 읽어옴
-		fgets(context_input_buffer, sizeof(context_input_buffer),fs);
-
 		// TA 쪽에 Encrypt Request 해야하는 부분
 	 	send_encrypt_request();
-		
-	 	fclose(fs);
-		
 	}
 
 	else if(strcmp(option, "-d") == 0){
 		printf("Decrypt option\n");
-	
-		fs = fopen(context_file_name,"r"); // input 파일 읽어옴
-		fgets(context_input_buffer, sizeof(context_input_buffer),fs);
-
 		// TA 쪽에 Decrypt Request 해야하는 부분
 		send_decrypt_request();
-		
-		fclose(fs);
 	}
 
 	else{
