@@ -28,6 +28,11 @@ void send_encrypt_request(void){
 	unsigned int random_key;
 
 	fs = fopen(context_file_name,"r"); // input 파일 읽어옴
+	if(fs == NULL){ 	
+		printf("파일 \"%s\" 를 찾을 수 없습니다\n", context_file_name);
+		exit(1);
+	}
+	
 	fgets(context_input_buffer, sizeof(context_input_buffer),fs);
 	fclose(fs);
 
@@ -74,6 +79,11 @@ void send_decrypt_request(void){
 	fclose(fs);
 	
 	FILE* fs_keyfile = fopen(key_file_name, "r");
+	if(fs == NULL){ 	
+		printf("파일 \"%s\" 를 찾을 수 없습니다\n", key_file_name);
+		exit(1);
+	}
+	
 	char c_key[20]; 
 	fgets(c_key, sizeof(c_key), fs_keyfile);
 	fclose(fs_keyfile);
