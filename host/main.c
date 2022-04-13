@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미터로 Argument들을 받도록 함.
 {
-	
+	FILE *fs; // input 받을 file 포인터
 	char option[10]; /* option 에 관한 argument를 할당할 char[] */
 	char context_file_name[100]; /* 입력받을 파일의 이름을 저장할 char[] */ 
 	char context_input_buffer[100]; /* 입력받을 파일의 데이터를 담을 버퍼 */
@@ -43,7 +43,12 @@ int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미�
 		strcpy(context_file_name, argv[2]); // argv[2] 위치가 파일 이름
 	} 
 	if(strcmp(option, "-e") == 0){
+
 		printf("Encrypt option");
+		fs = fopen(context_file_name,"r"); // input 파일 읽어옴
+		fgets(context_input_buffer, sizeof(context_input_buffer),fs);
+
+		printf("%s", context_input_buffer);	
 		// TA 쪽에 Encrypt Request 해야하는 부분
 		res = TEEC_InvokeCommand(&sess, TA_TEEencrypt_CMD_ENCRYPT, &op,
 				 &err_origin); //TA의 encrypt 함수 호출
@@ -51,20 +56,27 @@ int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미�
 		errx(1, "TEEC_InvokeCommand failed with code 0x%x origin 0x%x",
 			res, err_origin);
 
-
+	 	fclose(fs);
 		
 	}
 
 	else if(strcmp(option, "-d") == 0){
 		printf("Decrypt option");
+	
+		fs = fopen(context_file_name,"r"); // input 파일 읽어옴
+		fgets(context_input_buffer, sizeof(context_input_buffer),fs);
+
+
 		// TA 쪽에 Decrypt Request 해야하는 부분
 		res = TEEC_InvokeCommand(&sess, TA_TEEencrypt_CMD_DECRYPT, &op,
 				 &err_origin);
 		if (res != TEEC_SUCCESS)
 		errx(1, "TEEC_InvokeCommand failed with code 0x%x origin 0x%x",
 			res, err_origin);
-
+		
+		fclose(fs);
 	}
+
 
 	TEEC_CloseSession(&sess);
 
