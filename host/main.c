@@ -10,6 +10,14 @@ char context_file_name[100]; /* 입력받을 파일의 이름을 저장할 char[
 char context_input_buffer[100]; /* 입력받을 파일의 데이터를 담을 버퍼 */
 int len = 100
 
+TEEC_Result res;
+TEEC_Context ctx;
+TEEC_Session sess;
+TEEC_Operation op;
+TEEC_UUID uuid = TA_TEEencrypt_UUID;
+uint32_t err_origin;
+
+
 void send_encrypt_request(void){
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_NONE,
 	TEEC_NONE, TEEC_NONE);
@@ -48,13 +56,6 @@ void send_decrypt_request(void){
 
 int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미터로 Argument들을 받도록 함.
 {
-	TEEC_Result res;
-	TEEC_Context ctx;
-	TEEC_Session sess;
-	TEEC_Operation op;
-	TEEC_UUID uuid = TA_TEEencrypt_UUID;
-	uint32_t err_origin;
-
 	/* Initialize a context connecting us to the TEE */
 	res = TEEC_InitializeContext(NULL, &ctx);
 	if (res != TEEC_SUCCESS)
@@ -85,14 +86,9 @@ int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미�
 		fs = fopen(context_file_name,"r"); // input 파일 읽어옴
 		fgets(context_input_buffer, sizeof(context_input_buffer),fs);
 
-		printf("%s", context_input_buffer);	
 		// TA 쪽에 Encrypt Request 해야하는 부분
-		res = TEEC_InvokeCommand(&sess, TA_TEEencrypt_CMD_ENCRYPT, &op,
-				 &err_origin); //TA의 encrypt 함수 호출
-		if (res != TEEC_SUCCESS)
-		errx(1, "TEEC_InvokeCommand failed with code 0x%x origin 0x%x",
-			res, err_origin);
-
+	 	send_encrypt_request();
+		
 	 	fclose(fs);
 		
 	}
@@ -105,12 +101,7 @@ int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미�
 
 
 		// TA 쪽에 Decrypt Request 해야하는 부분
-		res = TEEC_InvokeCommand(&sess, TA_TEEencrypt_CMD_DECRYPT, &op,
-				 &err_origin);
-		if (res != TEEC_SUCCESS)
-		errx(1, "TEEC_InvokeCommand failed with code 0x%x origin 0x%x",
-			res, err_origin);
-		
+		send_decrypt_request	
 		fclose(fs);
 	}
 
