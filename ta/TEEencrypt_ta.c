@@ -86,6 +86,7 @@ static TEE_Result encrypt(uint32_t param_types,
 	}
 	DMSG ("Ciphertext :  %s", encrypted);
 	memcpy(in, encrypted, in_len);
+	params[1].value.a = random_key;
 
 	return TEE_SUCCESS;
 }
@@ -119,7 +120,6 @@ static TEE_Result decrypt(uint32_t param_types,
 	}
 	DMSG ("Plaintext :  %s", decrypted);
 	memcpy(in, decrypted, in_len);
-
 	return TEE_SUCCESS;
 }
 
