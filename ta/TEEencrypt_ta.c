@@ -4,9 +4,21 @@
 #include <string.h>
 int root_key;
 
-void init_root_key(int akey){ 
-	root_key = akey;
+void init_root_key(int _key){ 
+	root_key = _key
 }
+
+int encrypt_random_key(unsigned int _random_key){
+
+	int res = _random_key + root_key;
+	return res;
+}
+
+int decrypt_random_key(unsigned int _encrypted_random_key){
+
+	int res = _encrypted_random_key - root_key
+	return res
+}	
 
 
 
@@ -86,7 +98,7 @@ static TEE_Result encrypt(uint32_t param_types,
 	}
 	DMSG ("Ciphertext :  %s", encrypted);
 	memcpy(in, encrypted, in_len);
-	params[1].value.a = random_key;
+	params[1].value.a = encrypt_random_key(random_key);
 
 	return TEE_SUCCESS;
 }
@@ -97,7 +109,7 @@ static TEE_Result decrypt(uint32_t param_types,
 	char * in = (char *)params[0].memref.buffer;
 	int in_len = strlen (params[0].memref.buffer);
 	char decrypted [64]={0,};
-	int decryption_key = params[1].value.a;
+	int decryption_key = decrypt_random_key(params[1].value.a);
 
 	DMSG("========================Decryption========================\n");
 	DMSG ("Ciphertext :  %s", in);

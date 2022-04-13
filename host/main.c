@@ -76,7 +76,7 @@ void send_decrypt_request(void){
 	
 	fs_keyfile = fopen(key_file_name, "r");
 	char c_key[20]; 
-	fgets(c_key, sizeof(c_key); fs_keyfile);
+	fgets(c_key, sizeof(c_key), fs_keyfile);
 	fclose(fs_keyfile);
 	i_key = atoi(c_key);
 	op.params[1].value.a = i_key;
