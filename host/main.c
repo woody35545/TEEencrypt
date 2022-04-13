@@ -41,7 +41,7 @@ void send_encrypt_request(void){
 	char encrypted_file_name[20] = "encrypted_"; 
 	strcat(encrypted_file_name, context_file_name);
 	FILE* fs_encrypted = fopen(encrytped_file_name, "w");
-	fputs(encrypted, fs_encrypted);
+	fputs(ciphertext, fs_encrypted);
 	fclose(fs_encrypted);
 
 }
@@ -72,7 +72,7 @@ void send_decrypt_request(void){
 	char decrypted_file_name[20] = "decrypted_"; 
 	strcat(decrypted_file_name, context_file_name);
 	FILE* fs_decrypted = fopen(decrytped_file_name, "w");
-	fputs(decrypted, fs_decrypted);
+	fputs(plaintext, fs_decrypted);
 	fclose(fs_decrypted);
 
 }
