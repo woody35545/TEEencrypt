@@ -8,7 +8,7 @@ FILE *fs; // input 받을 file 포인터
 char option[10]; /* option 에 관한 argument를 할당할 char[] */
 char context_file_name[100]; /* 입력받을 파일의 이름을 저장할 char[] */ 
 char context_input_buffer[100]; /* 입력받을 파일의 데이터를 담을 버퍼 */
-int len = 100
+int len = 100;
 
 TEEC_Result res;
 TEEC_Context ctx;
