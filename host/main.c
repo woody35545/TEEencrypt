@@ -20,9 +20,11 @@ uint32_t err_origin;
 
 void send_encrypt_request(void){
 	char ciphertext [100] = {0,}; 
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_NONE, TEEC_NONE, TEEC_NONE);
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_VALUE_INOUT, TEEC_NONE, TEEC_NONE);
 	op.params[0].tmpref.buffer = context_input_buffer;
 	op.params[0].tmpref.size = len;
+	
+	unsigned int random_key;
 
 	fs = fopen(context_file_name,"r"); // input 파일 읽어옴
 	fgets(context_input_buffer, sizeof(context_input_buffer),fs);
@@ -36,6 +38,8 @@ void send_encrypt_request(void){
 		errx(1, "TEEC_InvokeCommand failed with code 0x%x origin 0x%x",res, err_origin);
 
 	memcpy(ciphertext, op.params[0].tmpref.buffer, len);
+	random_key = op.params[1].value.a ;
+	printf("Random key Recieved: %d", random_key);
 	printf("Ciphertext : %s\n", ciphertext);
 	
 	char encrypted_file_name[20] = "encrypted_"; 
