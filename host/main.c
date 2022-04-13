@@ -64,7 +64,6 @@ void send_encrypt_request(void){
 
 void send_decrypt_request(void){
 	char plaintext [100] = {0,};
-	int i_key;
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_VALUE_INOUT, TEEC_NONE, TEEC_NONE);
 	op.params[0].tmpref.buffer = context_input_buffer;
 	op.params[0].tmpref.size = len;
@@ -78,8 +77,7 @@ void send_decrypt_request(void){
 	char c_key[20]; 
 	fgets(c_key, sizeof(c_key), fs_keyfile);
 	fclose(fs_keyfile);
-	i_key = atoi(c_key);
-	op.params[1].value.a = i_key;
+	op.params[1].value.a = atoi(c_key);
 	
 	printf("========================Decryption========================\n");
 	memcpy(op.params[0].tmpref.buffer, context_input_buffer, len);
