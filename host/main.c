@@ -3,49 +3,51 @@
 #include <string.h>
 #include <tee_client_api.h>
 #include <TEEencrypt_ta.h>
-void request(void){
-// need to modify
-op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_NONE,
-					 TEEC_NONE, TEEC_NONE);
-	op.params[0].tmpref.buffer = plaintext;
+
+FILE *fs; // input 받을 file 포인터
+char option[10]; /* option 에 관한 argument를 할당할 char[] */
+char context_file_name[100]; /* 입력받을 파일의 이름을 저장할 char[] */ 
+char context_input_buffer[100]; /* 입력받을 파일의 데이터를 담을 버퍼 */
+int len = 100
+
+void send_encrypt_request(void){
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_NONE,
+	TEEC_NONE, TEEC_NONE);
+	op.params[0].tmpref.buffer = {0,};
 	op.params[0].tmpref.size = len;
 
 	printf("========================Encryption========================\n");
-	printf("Please Input Plaintext : ");
-	scanf("%[^\n]s",plaintext);
-	memcpy(op.params[0].tmpref.buffer, plaintext, len);
+	memcpy(op.params[0].tmpref.buffer, context_input_buffer, len);
 
-	res = TEEC_InvokeCommand(&sess, TA_MYTA_CMD_ENC_VALUE, &op,
-				 &err_origin);
+	res = TEEC_InvokeCommand(&sess, TA_TEEencrypt_CMD_ENCRYPT, &op,&err_origin);
 	if (res != TEEC_SUCCESS)
-		errx(1, "TEEC_InvokeCommand failed with code 0x%x origin 0x%x",
-			res, err_origin);
+		errx(1, "TEEC_InvokeCommand failed with code 0x%x origin 0x%x",res, err_origin);
 
 	memcpy(ciphertext, op.params[0].tmpref.buffer, len);
 	printf("Ciphertext : %s\n", ciphertext);
 
-	printf("========================Decryption========================\n");
-	printf("Please Input Ciphertext : ");
-	getchar();
-	scanf("%[^\n]s",ciphertext);
+}
 
-	memcpy(op.params[0].tmpref.buffer, ciphertext, len);
-	res = TEEC_InvokeCommand(&sess, TA_MYTA_CMD_DEC_VALUE, &op,
-				 &err_origin);
+void send_decrypt_request(void){
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_NONE,
+	TEEC_NONE, TEEC_NONE);
+	op.params[0].tmpref.buffer = {0,};
+	op.params[0].tmpref.size = len;
+
+	printf("========================Encryption========================\n");
+	memcpy(op.params[0].tmpref.buffer, context_input_buffer, len);
+
+	res = TEEC_InvokeCommand(&sess, TA_TEEencrypt_CMD_DECRYPT, &op,&err_origin);
 	if (res != TEEC_SUCCESS)
-		errx(1, "TEEC_InvokeCommand failed with code 0x%x origin 0x%x",
-			res, err_origin);
-	memcpy(plaintext, op.params[0].tmpref.buffer, len);
-	printf("Plaintext : %s\n", plaintext);
+		errx(1, "TEEC_InvokeCommand failed with code 0x%x origin 0x%x",res, err_origin);
 
-} 
+	memcpy(ciphertext, op.params[0].tmpref.buffer, len);
+	printf("Plaintext : %s\n", ciphertext);
+
+}
+
 int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미터로 Argument들을 받도록 함.
 {
-	FILE *fs; // input 받을 file 포인터
-	char option[10]; /* option 에 관한 argument를 할당할 char[] */
-	char context_file_name[100]; /* 입력받을 파일의 이름을 저장할 char[] */ 
-	char context_input_buffer[100]; /* 입력받을 파일의 데이터를 담을 버퍼 */
-
 	TEEC_Result res;
 	TEEC_Context ctx;
 	TEEC_Session sess;
