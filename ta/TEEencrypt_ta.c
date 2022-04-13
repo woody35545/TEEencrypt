@@ -45,18 +45,36 @@ void TA_CloseSessionEntryPoint(void __maybe_unused *sess_ctx)
 	IMSG("Goodbye!\n");
 }
 
+
+/**/
+
 static TEE_Result encrypt(uint32_t param_types,
 	TEE_Param params[4])
 {
-	uint32_t exp_param_types = TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INOUT,
-						   TEE_PARAM_TYPE_NONE,
-						   TEE_PARAM_TYPE_NONE,
-						   TEE_PARAM_TYPE_NONE);
+	char * in = (char *)params[0].memref.buffer;
+	int in_len = strlen (params[0].memref.buffer);
+	char encrypted [64]={0,};
 
-	DMSG("this is Encrypt function");
-	if (param_types != exp_param_types)
-		return TEE_ERROR_BAD_PARAMETERS;
+	DMSG("========================Encryption========================\n");
+	DMSG ("Plaintext :  %s", in);
+	memcpy(encrypted, in, in_len);
 
+	for(int i=0; i<in_len;i++){
+		if(encrypted[i]>='a' && encrypted[i] <='z'){
+			encrypted[i] -= 'a';
+			encrypted[i] += key;
+			encrypted[i] = encrypted[i] % 26;
+			encrypted[i] += 'a';
+		}
+		else if (encrypted[i] >= 'A' && encrypted[i] <= 'Z') {
+			encrypted[i] -= 'A';
+			encrypted[i] += key;
+			encrypted[i] = encrypted[i] % 26;
+			encrypted[i] += 'A';
+		}
+	}
+	DMSG ("Ciphertext :  %s", encrypted);
+	memcpy(in, encrypted, in_len);
 
 	return TEE_SUCCESS;
 }
@@ -64,18 +82,37 @@ static TEE_Result encrypt(uint32_t param_types,
 static TEE_Result decrypt(uint32_t param_types,
 	TEE_Param params[4])
 {
-	uint32_t exp_param_types = TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INOUT,
-						   TEE_PARAM_TYPE_NONE,
-						   TEE_PARAM_TYPE_NONE,
-						   TEE_PARAM_TYPE_NONE);
+	char * in = (char *)params[0].memref.buffer;
+	int in_len = strlen (params[0].memref.buffer);
+	char decrypted [64]={0,};
 
-	DMSG("this is Decryptt function");
-	if (param_types != exp_param_types)
-		return TEE_ERROR_BAD_PARAMETERS;
+	DMSG("========================Decryption========================\n");
+	DMSG ("Ciphertext :  %s", in);
+	memcpy(decrypted, in, in_len);
 
+	for(int i=0; i<in_len;i++){
+		if(decrypted[i]>='a' && decrypted[i] <='z'){
+			decrypted[i] -= 'a';
+			decrypted[i] -= key;
+			decrypted[i] += 26;
+			decrypted[i] = decrypted[i] % 26;
+			decrypted[i] += 'a';
+		}
+		else if (decrypted[i] >= 'A' && decrypted[i] <= 'Z') {
+			decrypted[i] -= 'A';
+			decrypted[i] -= key;
+			decrypted[i] += 26;
+			decrypted[i] = decrypted[i] % 26;
+			decrypted[i] += 'A';
+		}
+	}
+	DMSG ("Plaintext :  %s", decrypted);
+	memcpy(in, decrypted, in_len);
 
 	return TEE_SUCCESS;
 }
+
+/**/
 
 TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
 			uint32_t cmd_id,
