@@ -21,8 +21,7 @@ uint32_t err_origin;
 void send_encrypt_request(void){
 	char ciphertext [100];
 
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_NONE,
-	TEEC_NONE, TEEC_NONE);
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_NONE, TEEC_NONE, TEEC_NONE);
 	op.params[0].tmpref.buffer = {0,};
 	op.params[0].tmpref.size = len;
 
@@ -41,8 +40,7 @@ void send_encrypt_request(void){
 void send_decrypt_request(void){
 	char plaintext [100];
 
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_NONE,
-	TEEC_NONE, TEEC_NONE);
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_NONE, TEEC_NONE, TEEC_NONE);
 	op.params[0].tmpref.buffer = {0,};
 	op.params[0].tmpref.size = len;
 
@@ -74,8 +72,7 @@ int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미�
 	/* Clear the TEEC_Operation struct */
 	memset(&op, 0, sizeof(op));
 
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INOUT, TEEC_NONE,
-					 TEEC_NONE, TEEC_NONE);
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INOUT, TEEC_NONE, TEEC_NONE, TEEC_NONE);
 
 
 	/* Argument 초기화 */
