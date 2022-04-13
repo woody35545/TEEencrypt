@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미�
 	} 
 	if(strcmp(option, "-e") == 0){
 
-		printf("Encrypt option");
+		printf("Encrypt option\n");
 		fs = fopen(context_file_name,"r"); // input 파일 읽어옴
 		fgets(context_input_buffer, sizeof(context_input_buffer),fs);
 
@@ -95,18 +95,20 @@ int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미�
 	}
 
 	else if(strcmp(option, "-d") == 0){
-		printf("Decrypt option");
+		printf("Decrypt option\n");
 	
 		fs = fopen(context_file_name,"r"); // input 파일 읽어옴
 		fgets(context_input_buffer, sizeof(context_input_buffer),fs);
 
-
 		// TA 쪽에 Decrypt Request 해야하는 부분
 		send_decrypt_request();
+		
 		fclose(fs);
 	}
 
-
+	else{
+		printf("Warning: Invalid Command\n") ;	
+	}
 	TEEC_CloseSession(&sess);
 
 	TEEC_FinalizeContext(&ctx);
