@@ -53,8 +53,7 @@ static TEE_Result encrypt(uint32_t param_types,
 						   TEE_PARAM_TYPE_NONE,
 						   TEE_PARAM_TYPE_NONE);
 
-	DMSG("has been called");
-
+	DMSG("this is Encrypt function");
 	if (param_types != exp_param_types)
 		return TEE_ERROR_BAD_PARAMETERS;
 
@@ -70,8 +69,7 @@ static TEE_Result decrypt(uint32_t param_types,
 						   TEE_PARAM_TYPE_NONE,
 						   TEE_PARAM_TYPE_NONE);
 
-	DMSG("has been called");
-
+	DMSG("this is Decryptt function");
 	if (param_types != exp_param_types)
 		return TEE_ERROR_BAD_PARAMETERS;
 
