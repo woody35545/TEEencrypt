@@ -19,12 +19,14 @@ uint32_t err_origin;
 
 
 void send_encrypt_request(void){
-	char ciphertext [100];
-
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_NONE,
-	TEEC_NONE, TEEC_NONE);
-	op.params[0].tmpref.buffer = {0,};
+	char ciphertext [100] = {0,}; 
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_NONE, TEEC_NONE, TEEC_NONE);
+	op.params[0].tmpref.buffer = context_input_buffer;
 	op.params[0].tmpref.size = len;
+
+	fs = fopen(context_file_name,"r"); // input 파일 읽어옴
+	fgets(context_input_buffer, sizeof(context_input_buffer),fs);
+	fclose(fs);
 
 	printf("========================Encryption========================\n");
 	memcpy(op.params[0].tmpref.buffer, context_input_buffer, len);
@@ -35,17 +37,28 @@ void send_encrypt_request(void){
 
 	memcpy(ciphertext, op.params[0].tmpref.buffer, len);
 	printf("Ciphertext : %s\n", ciphertext);
+	
+	char encrypted_file_name[20] = "encrypted_"; 
+	strcat(encrypted_file_name, context_file_name);
+	FILE* fs_encrypted = fopen(encrytped_file_name, "w");
+	fputs(encrypted, fs_encrypted);
+	fclose(fs_encrypted);
 
 }
 
 void send_decrypt_request(void){
-	char plaintext [100];
+	char plaintext [100] = {0,};
 
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_NONE,
-	TEEC_NONE, TEEC_NONE);
-	op.params[0].tmpref.buffer = {0,};
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_NONE, TEEC_NONE, TEEC_NONE);
+	op.params[0].tmpref.buffer = context_input_buffer;
 	op.params[0].tmpref.size = len;
 
+	
+	fs = fopen(context_file_name,"r"); // input 파일 읽어옴
+	fgets(context_input_buffer, sizeof(context_input_buffer),fs);
+	fclose(fs);
+	
+	
 	printf("========================Decryption========================\n");
 	memcpy(op.params[0].tmpref.buffer, context_input_buffer, len);
 
@@ -56,10 +69,17 @@ void send_decrypt_request(void){
 	memcpy(plaintext, op.params[0].tmpref.buffer, len);
 	printf("Plaintext : %s\n", plaintext);
 
+	char decrypted_file_name[20] = "decrypted_"; 
+	strcat(decrypted_file_name, context_file_name);
+	FILE* fs_decrypted = fopen(decrytped_file_name, "w");
+	fputs(decrypted, fs_decrypted);
+	fclose(fs_decrypted);
+
 }
 
 int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미터로 Argument들을 받도록 함.
 {
+	
 	/* Initialize a context connecting us to the TEE */
 	res = TEEC_InitializeContext(NULL, &ctx);
 	if (res != TEEC_SUCCESS)
@@ -73,9 +93,8 @@ int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미�
 
 	/* Clear the TEEC_Operation struct */
 	memset(&op, 0, sizeof(op));
-
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INOUT, TEEC_NONE,
-					 TEEC_NONE, TEEC_NONE);
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INOUT, TEEC_NONE, TEEC_NONE, TEEC_NONE);
+	context_input_buffer = {0,};
 
 
 	/* Argument 초기화 */
@@ -86,32 +105,22 @@ int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미�
 	} 
 	if(strcmp(option, "-e") == 0){
 
-		printf("Encrypt option");
-		fs = fopen(context_file_name,"r"); // input 파일 읽어옴
-		fgets(context_input_buffer, sizeof(context_input_buffer),fs);
-
+		printf("Encrypt option\n");
 		// TA 쪽에 Encrypt Request 해야하는 부분
 	 	send_encrypt_request();
-		
-	 	fclose(fs);
-		
 	}
 
 	else if(strcmp(option, "-d") == 0){
-		printf("Decrypt option");
-	
-		fs = fopen(context_file_name,"r"); // input 파일 읽어옴
-		fgets(context_input_buffer, sizeof(context_input_buffer),fs);
-
-
+		printf("Decrypt option\n");
 		// TA 쪽에 Decrypt Request 해야하는 부분
 		send_decrypt_request();
-		fclose(fs);
 	}
 
-
+	else{
+		printf("Warning: Invalid Command\n") ;	
+	}
+	
 	TEEC_CloseSession(&sess);
-
 	TEEC_FinalizeContext(&ctx);
 
 	return 0;
