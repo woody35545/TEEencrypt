@@ -97,6 +97,7 @@ static TEE_Result decrypt(uint32_t param_types,
 	char * in = (char *)params[0].memref.buffer;
 	int in_len = strlen (params[0].memref.buffer);
 	char decrypted [64]={0,};
+	int decryption_key = params[1].value.a;
 
 	DMSG("========================Decryption========================\n");
 	DMSG ("Ciphertext :  %s", in);
@@ -105,14 +106,14 @@ static TEE_Result decrypt(uint32_t param_types,
 	for(int i=0; i<in_len;i++){
 		if(decrypted[i]>='a' && decrypted[i] <='z'){
 			decrypted[i] -= 'a';
-			decrypted[i] -= root_key;
+			decrypted[i] -= decryption_key;
 			decrypted[i] += 26;
 			decrypted[i] = decrypted[i] % 26;
 			decrypted[i] += 'a';
 		}
 		else if (decrypted[i] >= 'A' && decrypted[i] <= 'Z') {
 			decrypted[i] -= 'A';
-			decrypted[i] -= root_key;
+			decrypted[i] -= decryption_key;
 			decrypted[i] += 26;
 			decrypted[i] = decrypted[i] % 26;
 			decrypted[i] += 'A';

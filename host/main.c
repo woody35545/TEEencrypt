@@ -10,7 +10,7 @@ char option[10]; /* option 에 관한 argument를 할당할 char[] */
 char context_file_name[100]; /* 입력받을 파일의 이름을 저장할 char[] */ 
 char context_input_buffer[100] = {0,}; /* 입력받을 파일의 데이터를 담을 버퍼 */
 int len = 100;
-
+char key_file_name[20];
 TEEC_Result res;
 TEEC_Context ctx;
 TEEC_Session sess;
@@ -64,16 +64,22 @@ void send_encrypt_request(void){
 
 void send_decrypt_request(void){
 	char plaintext [100] = {0,};
-
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_NONE, TEEC_NONE, TEEC_NONE);
+	int i_key;
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_INOUT, TEEC_NONE, TEEC_NONE);
 	op.params[0].tmpref.buffer = context_input_buffer;
 	op.params[0].tmpref.size = len;
-
+	
 	
 	fs = fopen(context_file_name,"r"); // input 파일 읽어옴
 	fgets(context_input_buffer, sizeof(context_input_buffer),fs);
 	fclose(fs);
 	
+	fs_keyfile = fopen(key_file_name, "r");
+	char c_key[20]; 
+	fgets(c_key, sizeof(c_key); fs_keyfile);
+	fclose(fs_keyfile);
+	i_key = atoi(c_key);
+	op.params[1].value.a = i_key;
 	
 	printf("========================Decryption========================\n");
 	memcpy(op.params[0].tmpref.buffer, context_input_buffer, len);
@@ -117,7 +123,11 @@ int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미�
 		// 확인완료
 		strcpy(option, argv[1]); //  argv[1] 위치가 option
 		strcpy(context_file_name, argv[2]); // argv[2] 위치가 파일 이름
-	} 
+		
+		if(strcmp(option, "-d") == 0 ){
+		strcpy(key_file_name, argv[3]);
+		}
+	}	 
 	if(strcmp(option, "-e") == 0){
 
 		printf("Encrypt option\n");
