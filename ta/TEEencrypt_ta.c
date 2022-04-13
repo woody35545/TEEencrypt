@@ -93,9 +93,9 @@ TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
 
 	switch (cmd_id) {
 	case TA_TEEencrypt_CMD_ENCRYPT:
-		return inc_value(param_types, params);
+		return encrypt(param_types, params);
 	case TA_TEEencrypt_CMD_DECRYPT:
-		return dec_value(param_types, params);
+		return decrypt(param_types, params);
 	default:
 		return TEE_ERROR_BAD_PARAMETERS;
 	}
