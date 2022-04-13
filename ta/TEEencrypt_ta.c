@@ -1,7 +1,13 @@
 #include <tee_internal_api.h>
 #include <tee_internal_api_extensions.h>
 #include <TEEencrypt_ta.h>
-int key;
+int root_key;
+
+void init_root_key(int akey){ 
+	root_key = akey;
+}
+
+
 
 TEE_Result TA_CreateEntryPoint(void)
 {
@@ -54,6 +60,10 @@ static TEE_Result encrypt(uint32_t param_types,
 	char * in = (char *)params[0].memref.buffer;
 	int in_len = strlen (params[0].memref.buffer);
 	char encrypted [64]={0,};
+	unsigned int random_key;
+	TEE_GenerateRandom(&random_key, sizeof(random_key));
+	random_key = random_key % 26;
+
 
 	DMSG("========================Encryption========================\n");
 	DMSG ("Plaintext :  %s", in);
@@ -62,13 +72,13 @@ static TEE_Result encrypt(uint32_t param_types,
 	for(int i=0; i<in_len;i++){
 		if(encrypted[i]>='a' && encrypted[i] <='z'){
 			encrypted[i] -= 'a';
-			encrypted[i] += key;
+			encrypted[i] += random_key;
 			encrypted[i] = encrypted[i] % 26;
 			encrypted[i] += 'a';
 		}
 		else if (encrypted[i] >= 'A' && encrypted[i] <= 'Z') {
 			encrypted[i] -= 'A';
-			encrypted[i] += key;
+			encrypted[i] += random_key;
 			encrypted[i] = encrypted[i] % 26;
 			encrypted[i] += 'A';
 		}
@@ -93,14 +103,14 @@ static TEE_Result decrypt(uint32_t param_types,
 	for(int i=0; i<in_len;i++){
 		if(decrypted[i]>='a' && decrypted[i] <='z'){
 			decrypted[i] -= 'a';
-			decrypted[i] -= key;
+			decrypted[i] -= root_key;
 			decrypted[i] += 26;
 			decrypted[i] = decrypted[i] % 26;
 			decrypted[i] += 'a';
 		}
 		else if (decrypted[i] >= 'A' && decrypted[i] <= 'Z') {
 			decrypted[i] -= 'A';
-			decrypted[i] -= key;
+			decrypted[i] -= root_key;
 			decrypted[i] += 26;
 			decrypted[i] = decrypted[i] % 26;
 			decrypted[i] += 'A';
@@ -119,7 +129,8 @@ TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
 			uint32_t param_types, TEE_Param params[4])
 {
 
-	key = 3;
+	init_root_key(3);
+
 	(void)&sess_ctx; /* Unused parameter */
 
 	switch (cmd_id) {
