@@ -65,7 +65,7 @@ void send_encrypt_request(void){
 void send_decrypt_request(void){
 	char plaintext [100] = {0,};
 	int i_key;
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_INOUT, TEEC_NONE, TEEC_NONE);
+	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_VALUE_INOUT, TEEC_NONE, TEEC_NONE);
 	op.params[0].tmpref.buffer = context_input_buffer;
 	op.params[0].tmpref.size = len;
 	
