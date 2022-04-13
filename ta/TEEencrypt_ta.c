@@ -5,7 +5,7 @@
 int root_key;
 
 void init_root_key(int _key){ 
-	root_key = _key
+	root_key = _key;
 }
 
 int encrypt_random_key(unsigned int _random_key){
@@ -16,8 +16,8 @@ int encrypt_random_key(unsigned int _random_key){
 
 int decrypt_random_key(unsigned int _encrypted_random_key){
 
-	int res = _encrypted_random_key - root_key
-	return res
+	int res = _encrypted_random_key - root_key;
+	return res;
 }	
 
 
