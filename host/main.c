@@ -7,7 +7,7 @@
 FILE *fs; // input 받을 file 포인터
 char option[10]; /* option 에 관한 argument를 할당할 char[] */
 char context_file_name[100]; /* 입력받을 파일의 이름을 저장할 char[] */ 
-char context_input_buffer[100]; /* 입력받을 파일의 데이터를 담을 버퍼 */
+char context_input_buffer[100] = {0,}; /* 입력받을 파일의 데이터를 담을 버퍼 */
 int len = 100;
 
 TEEC_Result res;
@@ -94,7 +94,6 @@ int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미�
 	/* Clear the TEEC_Operation struct */
 	memset(&op, 0, sizeof(op));
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INOUT, TEEC_NONE, TEEC_NONE, TEEC_NONE);
-	context_input_buffer = {0,};
 
 
 	/* Argument 초기화 */
