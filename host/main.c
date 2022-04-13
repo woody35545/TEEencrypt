@@ -3,7 +3,42 @@
 #include <string.h>
 #include <tee_client_api.h>
 #include <TEEencrypt_ta.h>
+void request(void){
+// need to modify
+op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_NONE,
+					 TEEC_NONE, TEEC_NONE);
+	op.params[0].tmpref.buffer = plaintext;
+	op.params[0].tmpref.size = len;
 
+	printf("========================Encryption========================\n");
+	printf("Please Input Plaintext : ");
+	scanf("%[^\n]s",plaintext);
+	memcpy(op.params[0].tmpref.buffer, plaintext, len);
+
+	res = TEEC_InvokeCommand(&sess, TA_MYTA_CMD_ENC_VALUE, &op,
+				 &err_origin);
+	if (res != TEEC_SUCCESS)
+		errx(1, "TEEC_InvokeCommand failed with code 0x%x origin 0x%x",
+			res, err_origin);
+
+	memcpy(ciphertext, op.params[0].tmpref.buffer, len);
+	printf("Ciphertext : %s\n", ciphertext);
+
+	printf("========================Decryption========================\n");
+	printf("Please Input Ciphertext : ");
+	getchar();
+	scanf("%[^\n]s",ciphertext);
+
+	memcpy(op.params[0].tmpref.buffer, ciphertext, len);
+	res = TEEC_InvokeCommand(&sess, TA_MYTA_CMD_DEC_VALUE, &op,
+				 &err_origin);
+	if (res != TEEC_SUCCESS)
+		errx(1, "TEEC_InvokeCommand failed with code 0x%x origin 0x%x",
+			res, err_origin);
+	memcpy(plaintext, op.params[0].tmpref.buffer, len);
+	printf("Plaintext : %s\n", plaintext);
+
+} 
 int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미터로 Argument들을 받도록 함.
 {
 	FILE *fs; // input 받을 file 포인터
