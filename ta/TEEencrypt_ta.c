@@ -64,7 +64,7 @@ static TEE_Result encrypt(uint32_t param_types,
 	unsigned int random_key;
 	TEE_GenerateRandom(&random_key, sizeof(random_key));
 	random_key = random_key % 26;
-
+	printf("random_key: %d\n", random_key);
 
 	DMSG("========================Encryption========================\n");
 	DMSG ("Plaintext :  %s", in);
