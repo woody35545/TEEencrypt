@@ -53,7 +53,8 @@ void send_encrypt_request(void){
 	strcat(encrypted_key_file_name,context_file_name);
 	
 	char c_key[20];
-	itoa(random_key, c_key, sizeof(c_key));
+	//itoa(random_key, c_key, sizeof(c_key));
+	sprintf(c_key, "%d", random_key);
 
 	FILE* fs_keyfile = fopen(encrypted_key_file_name, "w");
 	fputs(c_key, fs_keyfile);
