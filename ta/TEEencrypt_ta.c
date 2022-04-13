@@ -1,7 +1,7 @@
 #include <tee_internal_api.h>
 #include <tee_internal_api_extensions.h>
 #include <TEEencrypt_ta.h>
-
+int key;
 
 TEE_Result TA_CreateEntryPoint(void)
 {
