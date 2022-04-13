@@ -48,8 +48,9 @@ void send_encrypt_request(void){
 	FILE* fs_encrypted = fopen(encrypted_file_name, "w");
 	fputs(ciphertext, fs_encrypted);
 	fclose(fs_encrypted);
+	
 	char encrypted_key_file_name[20] = "KEY_";
-	strcat(encrypted_key_file,context_file_name);
+	strcat(encrypted_key_file_name,context_file_name);
 	
 	char c_key[20];
 	itoa(random_key, c_key, sizeof(c_key));
