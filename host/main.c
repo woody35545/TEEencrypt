@@ -18,22 +18,6 @@ int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미�
 	TEEC_UUID uuid = TA_TEEencrypt_UUID;
 	uint32_t err_origin;
 
-	/* Argument 초기화 */
-	if(argc >= 3){
-		// 확인완료
-		strcpy(option, argv[1]); //  argv[1] 위치가 option
-		strcpy(context_file_name, argv[2]); // argv[2] 위치가 파일 이름
-	} 
-	if(strcmp(option, "-e") == 0){
-		printf("Encrypt option");
-		// TA 쪽에 Encrypt Request 해야하는 부분
-	}
-
-	else if(strcmp(option, "-d") == 0){
-		printf("Decrypt option");
-		// TA 쪽에 Decrypt Request 해야하는 부분
-	}
-
 	/* Initialize a context connecting us to the TEE */
 	res = TEEC_InitializeContext(NULL, &ctx);
 	if (res != TEEC_SUCCESS)
@@ -50,15 +34,37 @@ int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미�
 
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INOUT, TEEC_NONE,
 					 TEEC_NONE, TEEC_NONE);
-	op.params[0].value.a = 42;
 
-	printf("Invoking TA to increment %d\n", op.params[0].value.a);
-	res = TEEC_InvokeCommand(&sess, TA_TEEencrypt_CMD_ENCRYPT, &op,
-				 &err_origin);
-	if (res != TEEC_SUCCESS)
+
+	/* Argument 초기화 */
+	if(argc >= 3){
+		// 확인완료
+		strcpy(option, argv[1]); //  argv[1] 위치가 option
+		strcpy(context_file_name, argv[2]); // argv[2] 위치가 파일 이름
+	} 
+	if(strcmp(option, "-e") == 0){
+		printf("Encrypt option");
+		// TA 쪽에 Encrypt Request 해야하는 부분
+		res = TEEC_InvokeCommand(&sess, TA_TEEencrypt_CMD_ENCRYPT, &op,
+				 &err_origin); //TA의 encrypt 함수 호출
+		if (res != TEEC_SUCCESS)
 		errx(1, "TEEC_InvokeCommand failed with code 0x%x origin 0x%x",
 			res, err_origin);
-	printf("TA incremented value to %d\n", op.params[0].value.a);
+
+
+		
+	}
+
+	else if(strcmp(option, "-d") == 0){
+		printf("Decrypt option");
+		// TA 쪽에 Decrypt Request 해야하는 부분
+		res = TEEC_InvokeCommand(&sess, TA_TEEencrypt_CMD_DECRYPT, &op,
+				 &err_origin);
+		if (res != TEEC_SUCCESS)
+		errx(1, "TEEC_InvokeCommand failed with code 0x%x origin 0x%x",
+			res, err_origin);
+
+	}
 
 	TEEC_CloseSession(&sess);
 
