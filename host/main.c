@@ -35,14 +35,34 @@
 /* To the the UUID (found the the TA's h-file(s)) */
 #include <TEEencrypt_ta.h>
 
-int main(void)
+int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미터로 Argument들을 받도록 함.
 {
+	
+	char option[10]; /* option 에 관한 argument를 할당할 char[] */
+	char context_file_name[100]; /* 입력받을 파일의 이름을 저장할 char[] */ 
+	char context_input_buffer[100]; /* 입력받을 파일의 데이터를 담을 버퍼 */
+
 	TEEC_Result res;
 	TEEC_Context ctx;
 	TEEC_Session sess;
 	TEEC_Operation op;
 	TEEC_UUID uuid = TA_TEEencrypt_UUID;
 	uint32_t err_origin;
+
+
+	/* Argument 초기화 */
+	if(argc >= 3){
+		strcpy(option, argv[1]); //  argv[1] 위치가 option
+		strcpy(context_file_name, argv[2]); // argv[2] 위치가 파일 이름
+	}
+
+	if(strcmp(option, "-e") == 0){
+		printf("Encrypt option");
+	}
+
+	else if(strcmp(option, "-d") == 0){
+		printf("Decrypt option");
+	}
 
 	/* Initialize a context connecting us to the TEE */
 	res = TEEC_InitializeContext(NULL, &ctx);
