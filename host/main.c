@@ -19,6 +19,8 @@ uint32_t err_origin;
 
 
 void send_encrypt_request(void){
+	char ciphertext [100];
+
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_NONE,
 	TEEC_NONE, TEEC_NONE);
 	op.params[0].tmpref.buffer = {0,};
@@ -37,20 +39,22 @@ void send_encrypt_request(void){
 }
 
 void send_decrypt_request(void){
+	char plaintext [100];
+
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_NONE,
 	TEEC_NONE, TEEC_NONE);
 	op.params[0].tmpref.buffer = {0,};
 	op.params[0].tmpref.size = len;
 
-	printf("========================Encryption========================\n");
+	printf("========================Decryption========================\n");
 	memcpy(op.params[0].tmpref.buffer, context_input_buffer, len);
 
 	res = TEEC_InvokeCommand(&sess, TA_TEEencrypt_CMD_DECRYPT, &op,&err_origin);
 	if (res != TEEC_SUCCESS)
 		errx(1, "TEEC_InvokeCommand failed with code 0x%x origin 0x%x",res, err_origin);
 
-	memcpy(ciphertext, op.params[0].tmpref.buffer, len);
-	printf("Plaintext : %s\n", ciphertext);
+	memcpy(plaintext, op.params[0].tmpref.buffer, len);
+	printf("Plaintext : %s\n", plaintext);
 
 }
 
