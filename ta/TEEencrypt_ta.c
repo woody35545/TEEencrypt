@@ -58,9 +58,6 @@ static TEE_Result encrypt(uint32_t param_types,
 	if (param_types != exp_param_types)
 		return TEE_ERROR_BAD_PARAMETERS;
 
-	IMSG("Got value: %u from NW", params[0].value.a);
-	params[0].value.a++;
-	IMSG("Increase value to: %u", params[0].value.a);
 
 	return TEE_SUCCESS;
 }
@@ -78,9 +75,6 @@ static TEE_Result decrypt(uint32_t param_types,
 	if (param_types != exp_param_types)
 		return TEE_ERROR_BAD_PARAMETERS;
 
-	IMSG("Got value: %u from NW", params[0].value.a);
-	params[0].value.a--;
-	IMSG("Decrease value to: %u", params[0].value.a);
 
 	return TEE_SUCCESS;
 }
