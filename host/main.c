@@ -1,5 +1,6 @@
 #include <err.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <tee_client_api.h>
 #include <TEEencrypt_ta.h>
