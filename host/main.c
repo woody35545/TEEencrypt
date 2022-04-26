@@ -41,7 +41,8 @@ void send_encrypt_request(void){
 	memcpy(ciphertext, op.params[0].tmpref.buffer, len);
 	random_key = op.params[1].value.a ;
 	printf("Random key: %d\n", random_key);
-	printf("Ciphertext : %s\n", ciphertext);
+	printf("Original Text: %s\n", context_input_buffer);
+	printf("Cipher Text : %s\n", ciphertext);
 	
 	char encrypted_file_name[20] = "encrypted_"; 
 	strcat(encrypted_file_name, context_file_name);
@@ -87,7 +88,7 @@ void send_decrypt_request(void){
 	if (res != TEEC_SUCCESS)
 		errx(1, "TEEC_InvokeCommand failed with code 0x%x origin 0x%x",res, err_origin);
 	memcpy(plaintext, op.params[0].tmpref.buffer, len);
-	printf("Plaintext : %s\n", plaintext);
+	printf("Plain Text : %s\n", plaintext);
 	char decrypted_file_name[20] = "decrypted_"; 
 	strcat(decrypted_file_name, context_file_name);
 	FILE* fs_decrypted = fopen(decrypted_file_name, "w");
