@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) // Option을 인자로 받기위해 파라미�
 
 
 	/* Argument 초기화 */
-	if(argc >= 3){
+	if(argc == 4){
 		strcpy(option, argv[1]); //  argv[1] 위치가 option
 		strcpy(context_file_name, argv[2]); // argv[2] 위치가 파일 이름
 		
