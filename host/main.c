@@ -40,8 +40,7 @@ void send_encrypt_request(void){
 		errx(1, "TEEC_InvokeCommand failed with code 0x%x origin 0x%x",res, err_origin);
 	memcpy(ciphertext, op.params[0].tmpref.buffer, len);
 	random_key = op.params[1].value.a ;
-	printf("Random key: %d\n", random_key);
-	printf("Original Text: %s\n", context_input_buffer);
+	printf("Random key: %d", random_key);
 	printf("Cipher Text : %s\n", ciphertext);
 	
 	char encrypted_file_name[20] = "encrypted_"; 
