@@ -20,7 +20,7 @@ uint32_t err_origin;
 
 
 void send_encrypt_request(void){
-	char ciphertext [100] = {0,}; 
+	char encryptedText [100] = {0,}; 
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_VALUE_INOUT, TEEC_NONE, TEEC_NONE);
 	op.params[0].tmpref.buffer = context_input_buffer;
 	op.params[0].tmpref.size = len;
@@ -43,15 +43,16 @@ void send_encrypt_request(void){
 	if (res != TEEC_SUCCESS)
 		errx(1, "TEEC_InvokeCommand failed with code 0x%x origin 0x%x",res, err_origin);
 
-	memcpy(ciphertext, op.params[0].tmpref.buffer, len);
+	memcpy(encryptedText, op.params[0].tmpref.buffer, len);
 	random_key = op.params[1].value.a ;
-	printf("Random key Recieved: %d", random_key);
-	printf("Ciphertext : %s\n", ciphertext);
+	printf("Random key Recieved: %d\n", random_key);
+	printf("OriginalText : %s\n", context_input_buffer);
+	printf("EncryptedText : %s\n", encryptedText);
 	
 	char encrypted_file_name[20] = "encrypted_"; 
 	strcat(encrypted_file_name, context_file_name);
 	FILE* fs_encrypted = fopen(encrypted_file_name, "w");
-	fputs(ciphertext, fs_encrypted);
+	fputs(encryptedText, fs_encrypted);
 	fclose(fs_encrypted);
 	
 	char encrypted_key_file_name[20] = "KEY_";
@@ -68,7 +69,7 @@ void send_encrypt_request(void){
 }
 
 void send_decrypt_request(void){
-	char plaintext [100] = {0,};
+	char decryptedText [100] = {0,};
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_OUTPUT, TEEC_VALUE_INOUT, TEEC_NONE, TEEC_NONE);
 	op.params[0].tmpref.buffer = context_input_buffer;
 	op.params[0].tmpref.size = len;
@@ -96,13 +97,12 @@ void send_decrypt_request(void){
 	if (res != TEEC_SUCCESS)
 		errx(1, "TEEC_InvokeCommand failed with code 0x%x origin 0x%x",res, err_origin);
 
-	memcpy(plaintext, op.params[0].tmpref.buffer, len);
-	printf("Plaintext : %s\n", plaintext);
-
+	memcpy(decryptedText, op.params[0].tmpref.buffer, len);
+	printf("DecryptedText : %s\n", decryptedText);
 	char decrypted_file_name[20] = "decrypted_"; 
 	strcat(decrypted_file_name, context_file_name);
 	FILE* fs_decrypted = fopen(decrypted_file_name, "w");
-	fputs(plaintext, fs_decrypted);
+	fputs(decryptedText, fs_decrypted);
 	fclose(fs_decrypted);
 
 }
